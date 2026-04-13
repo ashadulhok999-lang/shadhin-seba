@@ -21,14 +21,11 @@
         .admin-badge { background: #fee2e2; color: #dc2626; padding: 6px 15px; border-radius: 50px; display: inline-block; font-size: 14px; font-weight: bold; margin-bottom: 20px; }
         .google-btn { background: white; border: 1px solid #ddd; padding: 14px 24px; border-radius: 50px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; transition: all 0.3s; font-weight: 500; }
         .dashboard { display: none; }
-        .sidebar { width: 260px; background: #1e293b; color: white; position: fixed; height: 100vh; transition: all 0.3s; }
+        .sidebar { width: 260px; background: #1e293b; color: white; position: fixed; height: 100vh; }
         .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid #334155; }
-        .sidebar-menu { padding: 20px 0; }
-        .menu-item { padding: 12px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.3s; }
-        .menu-item.active { background: #334155; }
         .main-content { margin-left: 260px; padding: 20px; }
         .top-bar { background: white; padding: 15px 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .stat-card { background: white; padding: 20px; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .form-card { background: white; padding: 25px; border-radius: 15px; margin-bottom: 25px; }
         .form-group { margin-bottom: 20px; }
@@ -37,14 +34,11 @@
         .data-table { background: white; border-radius: 15px; overflow: hidden; }
         .table-header, .table-row { display: grid; grid-template-columns: 2fr 1.5fr 1fr 0.5fr; padding: 15px; border-bottom: 1px solid #eee; }
         .table-header { background: #f8f9fa; font-weight: bold; }
+        .page { display: none; }
+        .page.active { display: block; }
         .role-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; }
         .role-admin { background: #fee2e2; color: #dc2626; }
         .role-user { background: #dcfce7; color: #16a34a; }
-        .page { display: none; }
-        .page.active { display: block; }
-        .loading { text-align: center; padding: 40px; }
-        .spinner { width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid #dc2626; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar-header h3, .menu-item span { display: none; } .main-content { margin-left: 70px; } }
     </style>
 </head>
@@ -55,7 +49,7 @@
         <div class="logo"><i class="fas fa-shield-alt"></i></div>
         <div class="admin-badge"><i class="fas fa-crown"></i> অ্যাডমিন প্যানেল</div>
         <h1>স্বাধীন সেবা</h1>
-        <button class="google-btn" onclick="signInWithGoogle()"><i class="fab fa-google"></i> Google দিয়ে লগইন</button>
+        <button class="google-btn" onclick="signInWithGoogle()"><i class="fab fa-google"></i> Google দিয়ে লগইন করুন</button>
     </div>
 </div>
 
@@ -63,26 +57,26 @@
     <div class="sidebar">
         <div class="sidebar-header"><h3>স্বাধীন সেবা</h3></div>
         <div class="sidebar-menu">
-            <div class="menu-item active" data-page="dashboard-page"><i class="fas fa-chart-line"></i> <span>ড্যাশবোর্ড</span></div>
-            <div class="menu-item" data-page="upload-page"><i class="fas fa-upload"></i> <span>আপলোড</span></div>
-            <div class="menu-item" data-page="users-page"><i class="fas fa-users"></i> <span>সদস্যরা</span></div>
-            <div class="menu-item" data-page="notify-page"><i class="fas fa-bell"></i> <span>ঘোষণা</span></div>
+            <div class="menu-item active" data-page="dashboard-page" onclick="showPage('dashboard-page')"><i class="fas fa-chart-line"></i> <span>ড্যাশবোর্ড</span></div>
+            <div class="menu-item" data-page="upload-page" onclick="showPage('upload-page')"><i class="fas fa-upload"></i> <span>ডকুমেন্ট আপলোড</span></div>
+            <div class="menu-item" data-page="users-page" onclick="showPage('users-page')"><i class="fas fa-users"></i> <span>স্বেচ্ছাসেবক</span></div>
+            <div class="menu-item" data-page="notify-page" onclick="showPage('notify-page')"><i class="fas fa-bell"></i> <span>ঘোষণা প্রেরণ</span></div>
         </div>
     </div>
+
     <div class="main-content">
         <div class="top-bar"><h2 id="pageTitle">ড্যাশবোর্ড</h2><button class="btn-primary" onclick="logout()">লগআউট</button></div>
-        
+
         <div id="dashboard-page" class="page active">
             <div class="stats-grid">
-                <div class="stat-card"><div><h4>ডকুমেন্ট</h4><div class="number" id="totalDocs">0</div></div><i class="fas fa-file-alt"></i></div>
-                <div class="stat-card"><div><h4>সদস্য</h4><div class="number" id="totalUsers">0</div></div><i class="fas fa-users"></i></div>
+                <div class="stat-card"><div><h4>মোট ডকুমেন্ট</h4><div class="number" id="totalDocs">0</div></div><i class="fas fa-file-alt"></i></div>
+                <div class="stat-card"><div><h4>মোট স্বেচ্ছাসেবক</h4><div class="number" id="totalUsers">0</div></div><i class="fas fa-users"></i></div>
             </div>
         </div>
 
         <div id="upload-page" class="page">
             <div class="form-card">
-                <input type="text" id="docTitle" placeholder="শিরোনাম" class="form-group">
-                <select id="docCategory" class="form-group"><option value="অন্যান্য">অন্যান্য</option><option value="সংবিধান">সংবিধান</option></select>
+                <input type="text" id="docTitle" placeholder="ডকুমেন্টের শিরোনাম" class="form-group">
                 <input type="file" id="docFile" class="form-group">
                 <button class="btn-primary" onclick="uploadDocument()" id="uploadBtn">আপলোড করুন</button>
             </div>
@@ -90,19 +84,17 @@
         </div>
 
         <div id="users-page" class="page"><div id="usersList" class="data-table"></div></div>
-        
         <div id="notify-page" class="page">
             <div class="form-card">
                 <input type="text" id="notifTitle" placeholder="শিরোনাম" class="form-group">
-                <textarea id="notifMessage" placeholder="বার্তা লিখুন" class="form-group"></textarea>
-                <button class="btn-primary" onclick="sendNotification()">ঘোষণা পাঠান</button>
+                <textarea id="notifMessage" placeholder="বার্তা" class="form-group"></textarea>
+                <button class="btn-primary" onclick="sendNotification()">প্রেরণ করুন</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // ১. ফায়ারবেস কনফিগারেশন
     const firebaseConfig = {
         apiKey: "AIzaSyBZaXREa0EJ96dFVvBdb6NFrdYQolBz1P4",
         authDomain: "rococo-jalebi-5dcb6f.netlify.app", 
@@ -114,15 +106,11 @@
         measurementId: "G-VFNJ7N4D88"
     };
 
-    // ২. ফায়ারবেস ইনিশিয়ালাইজ (সবার আগে)
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    let currentUser = null;
-
-    // লগইন ফাংশন
     async function signInWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
         try {
@@ -131,40 +119,26 @@
             const userDoc = await db.collection('users').doc(user.uid).get();
             
             if (userDoc.exists && userDoc.data().role === 'admin') {
-                loginSuccess(user);
+                showDashboard();
             } else {
                 alert('অ্যাডমিন এক্সেস নেই!');
                 await auth.signOut();
             }
         } catch (error) {
-            alert('ত্রুটি: ' + error.message);
+            alert('লগইন ব্যর্থ: ' + error.message);
         }
     }
 
-    function loginSuccess(user) {
-        currentUser = user;
+    function showDashboard() {
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
         loadDashboardData();
-        loadDocuments();
-        loadUsers();
-    }
-
-    async function logout() {
-        await auth.signOut();
-        location.reload();
     }
 
     function showPage(pageId) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
-        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
     }
-
-    document.querySelectorAll('.menu-item').forEach(item => {
-        item.addEventListener('click', () => showPage(item.dataset.page));
-    });
 
     async function loadDashboardData() {
         const docs = await db.collection('documents').get();
@@ -173,52 +147,16 @@
         document.getElementById('totalUsers').innerText = users.size;
     }
 
-    async function uploadDocument() {
-        const file = document.getElementById('docFile').files[0];
-        const title = document.getElementById('docTitle').value;
-        const category = document.getElementById('docCategory').value;
-        if(!file || !title) return alert('সব তথ্য দিন');
-
-        const btn = document.getElementById('uploadBtn');
-        btn.disabled = true;
-        
-        try {
-            const ref = storage.ref().child(`docs/${Date.now()}_${file.name}`);
-            await ref.put(file);
-            const url = await ref.getDownloadURL();
-            await db.collection('documents').add({
-                title, url, category, uploadedAt: new Date()
-            });
-            alert('সফল হয়েছে');
-            loadDocuments();
-        } catch(e) { alert(e.message); }
-        btn.disabled = false;
+    async function logout() {
+        await auth.signOut();
+        location.reload();
     }
 
-    async function loadDocuments() {
-        const snap = await db.collection('documents').get();
-        let html = '';
-        snap.forEach(doc => {
-            const d = doc.data();
-            html += `<div class="table-row"><div>${d.title}</div><div>${d.category}</div><div>-</div><div><a href="${d.url}" target="_blank">View</a></div></div>`;
-        });
-        document.getElementById('documentsList').innerHTML = html;
-    }
-
-    async function loadUsers() {
-        const snap = await db.collection('users').get();
-        let html = '';
-        snap.forEach(doc => {
-            const u = doc.data();
-            html += `<div class="table-row"><div>${u.name}</div><div>${u.email}</div><div>${u.role}</div></div>`;
-        });
-        document.getElementById('usersList').innerHTML = html;
-    }
-
-    auth.onAuthStateChanged(async (user) => {
+    auth.onAuthStateChanged(user => {
         if (user) {
-            const userDoc = await db.collection('users').doc(user.uid).get();
-            if (userDoc.exists && userDoc.data().role === 'admin') loginSuccess(user);
+            db.collection('users').doc(user.uid).get().then(doc => {
+                if (doc.exists && doc.data().role === 'admin') showDashboard();
+            });
         }
     });
 </script>
