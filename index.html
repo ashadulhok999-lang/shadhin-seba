@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>স্বাধীন সেবা - স্বেচ্ছাসেবক পোর্টাল</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background: #f0fdf4;
+        }
+
+        /* Login Page */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .logo i { font-size: 40px; color: white; }
+        .login-card h1 { color: #16a34a; margin-bottom: 5px; }
+        .login-card .subtitle { color: #666; margin-bottom: 20px; }
+        .volunteer-badge {
+            background: #dcfce7;
+            color: #16a34a;
+            padding: 6px 15px;
+            border-radius: 50px;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .google-btn {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .google-btn:hover {
+            background: #f8f9fa;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Dashboard */
+        .dashboard { display: none; }
+        .navbar {
+            background: #16a34a;
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+        }
+        .tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            flex-wrap: wrap;
+        }
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            background: #16a34a;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            min-height: calc(100vh - 120px);
+        }
+        .tab-content.active { display: block; }
+
+        .welcome-card {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #16a34a;
+        }
+        .doc-item, .notif-item {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .doc-item:hover, .notif-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .event-item {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #16a34a;
+        }
+        .event-date { color: #16a34a; font-weight: bold; margin: 5px 0; }
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: #16a34a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 48px;
+            color: white;
+        }
+        .loading { text-align: center; padding: 40px; }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #16a34a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 500px;
+            width: 90%;
+        }
+        @media (max-width: 768px) {
+            .tab { padding: 10px; font-size: 12px; }
+            .stats-grid { gap: 10px; }
+            .stat-card .number { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Login Page -->
+<div id="loginPage" class="login-container">
+    <div class="login-card">
+        <div class="logo"><i class="fas fa-hands-helping"></i></div>
+        <div class="volunteer-badge"><i class="fas fa-heart"></i> স্বেচ্ছাসেবক পোর্টাল</div>
+        <h1>স্বাধীন সেবা</h1>
+        <p class="subtitle">স্বাধীন বাংলা স্পোর্টিং ক্লাব</p>
+        <button class="google-btn" onclick="signInWithGoogle()">
+            <i class="fab fa-google"></i> Google দিয়ে লগইন করুন
+        </button>
+        <p style="margin-top: 20px; font-size: 12px; color: #999;">
+            <i class="fas fa-sync-alt"></i> লগইন করলেই আপনার আগের সকল তথ্য ফিরে পাবেন
+        </p>
+    </div>
+</div>
+
+<!-- User Dashboard -->
+<div id="dashboard" class="dashboard">
+    <div class="navbar">
+        <h2><i class="fas fa-hands-helping"></i> স্বাধীন সেবা</h2>
+        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> লগআউট</button>
+    </div>
+    
+    <div class="tabs">
+        <div class="tab active" onclick="showTab('home-tab')"><i class="fas fa-home"></i> হোম</div>
+        <div class="tab" onclick="showTab('docs-tab')"><i class="fas fa-file-alt"></i> ডকুমেন্টস</div>
+        <div class="tab" onclick="showTab('events-tab')"><i class="fas fa-calendar-alt"></i> ইভেন্টস</div>
+        <div class="tab" onclick="showTab('profile-tab')"><i class="fas fa-user"></i> প্রোফাইল</div>
+    </div>
+
+    <!-- Home Tab -->
+    <div id="home-tab" class="tab-content active">
+        <div class="welcome-card" id="welcomeCard">
+            <h2 id="welcomeName">স্বাগতম!</h2>
+            <p>স্বাধীন বাংলা স্পোর্টিং ক্লাবের স্বেচ্ছাসেবক টিমে আপনাকে স্বাগতম</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card"><div style="font-size: 30px;">📄</div><div class="number" id="statDocs">0</div><div>ডকুমেন্ট</div></div>
+            <div class="stat-card"><div style="font-size: 30px;">🔔</div><div class="number" id="statNotifs">0</div><div>ঘোষণা</div></div>
+            <div class="stat-card"><div style="font-size: 30px;">📅</div><div class="number" id="statEvents">4</div><div>ইভেন্ট</div></div>
+        </div>
+        
+        <h3 style="margin: 20px 0 15px;">📢 সাম্প্রতিক ঘোষণা</h3>
+        <div id="recentNotifs" class="notif-list"><div class="loading"><div class="spinner"></div></div></div>
+        
+        <h3 style="margin: 20px 0 15px;">📄 সাম্প্রতিক ডকুমেন্ট</h3>
+        <div id="recentDocs" class="doc-list"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- Documents Tab -->
+    <div id="docs-tab" class="tab-content">
+        <input type="text" id="searchDoc" placeholder="🔍 ডকুমেন্ট খুঁজুন..." style="width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; border-radius:10px;">
+        <div id="allDocs" class="doc-list"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- Events Tab -->
+    <div id="events-tab" class="tab-content">
+        <div class="event-item"><div><strong>🏆 বার্ষিক ক্রীড়া প্রতিযোগিতা</strong></div><div class="event-date">📅 ১৫ মার্চ ২০২৪ | সকাল ১০টা</div><div>📍 মিরপুর স্টেডিয়াম</div></div>
+        <div class="event-item"><div><strong>🤝 স্বেচ্ছাসেবক সম্মেলন</strong></div><div class="event-date">📅 ২০ মার্চ ২০২৪ | বিকাল ৩টা</div><div>📍 ক্লাব হলরুম</div></div>
+        <div class="event-item"><div><strong>⚽ ফুটবল টুর্নামেন্ট</strong></div><div class="event-date">📅 ২৫ মার্চ ২০২৪ | সকাল ৮টা</div><div>📍 বাংলাদেশ আর্মি স্টেডিয়াম</div></div>
+        <div class="event-item"><div><strong>🩸 রক্তদান ক্যাম্পেইন</strong></div><div class="event-date">📅 ৩০ মার্চ ২০২৪ | সকাল ৯টা - বিকাল ৫টা</div><div>📍 ক্লাব প্রাঙ্গণ</div></div>
+    </div>
+
+    <!-- Profile Tab -->
+    <div id="profile-tab" class="tab-content">
+        <div class="profile-card">
+            <div class="profile-avatar" id="profileAvatar">U</div>
+            <h2 id="profileName">স্বেচ্ছাসেবক</h2>
+            <p id="profileEmail" style="color:#666; margin:10px 0;">email@example.com</p>
+            <p id="profileJoinDate" style="color:#666;">যোগদান: --</p>
+            <p id="profileSeenDocs" style="color:#666; margin:15px 0;">দেখা ডকুমেন্ট: 0 টি</p>
+            <button onclick="logout()" style="background:#dc2626; color:white; border:none; padding:10px 25px; border-radius:8px; cursor:pointer;"><i class="fas fa-sign-out-alt"></i> লগআউট</button>
+        </div>
+    </div>
+</div>
+
+<!-- Document Modal -->
+<div id="docModal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle"></h3>
+        <p id="modalDesc" style="margin:15px 0;"></p>
+        <p id="modalCategory" style="color:#16a34a;"></p>
+        <a id="modalLink" href="#" target="_blank" style="display:inline-block; background:#16a34a; color:white; padding:10px 20px; border-radius:8px; text-decoration:none; margin-top:15px;"><i class="fas fa-eye"></i> ডকুমেন্ট দেখুন</a>
+        <button onclick="closeModal()" style="background:#666; margin-top:15px; margin-left:10px; padding:10px 20px; border:none; border-radius:8px; color:white; cursor:pointer;">বন্ধ</button>
+    </div>
+</div>
+
+<script>
+    // ========== FIREBASE CONFIGURATION - আপনার তথ্য এখানে দিন ==========
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser = null;
+
+    async function signInWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        try {
+            const result = await auth.signInWithPopup(provider);
+            const user = result.user;
+            
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (!userDoc.exists) {
+                await db.collection('users').doc(user.uid).set({
+                    name: user.displayName, email: user.email, role: 'user',
+                    createdAt: new Date(), lastLogin: new Date(), seenDocuments: []
+                });
+            } else {
+                await db.collection('users').doc(user.uid).update({ lastLogin: new Date() });
+            }
+            
+            currentUser = user;
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            loadUserProfile();
+            loadHomeData();
+            loadAllDocuments();
+        } catch (error) {
+            alert('লগইন ব্যর্থ: ' + error.message);
+        }
+    }
+
+    async function logout() {
+        await auth.signOut();
+        currentUser = null;
+        document.getElementById('loginPage').style.display = 'flex';
+        document.getElementById('dashboard').style.display = 'none';
+    }
+
+    function showTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.target.classList.add('active');
+        if (tabId === 'profile-tab') loadUserProfile();
+        if (tabId === 'docs-tab') loadAllDocuments();
+    }
+
+    async function loadUserProfile() {
+        if (!currentUser) return;
+        const userDoc = await db.collection('users').doc(currentUser.uid).get();
+        const data = userDoc.data();
+        const seenCount = data?.seenDocuments?.length || 0;
+        document.getElementById('profileAvatar').innerText = (currentUser.displayName?.substring(0,1) || 'U').toUpperCase();
+        document.getElementById('profileName').innerText = currentUser.displayName || 'স্বেচ্ছাসেবক';
+        document.getElementById('profileEmail').innerText = currentUser.email;
+        document.getElementById('profileJoinDate').innerHTML = `যোগদান: ${data?.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString('bn-BD') : 'নতুন'}`;
+        document.getElementById('profileSeenDocs').innerHTML = `দেখা ডকুমেন্ট: ${seenCount} টি`;
+    }
+
+    async function loadHomeData() {
+        if (!currentUser) return;
+        document.getElementById('welcomeName').innerHTML = `স্বাগতম, ${currentUser.displayName?.split(' ')[0] || 'স্বেচ্ছাসেবক'}!`;
+        
+        const [docsSnap, notifsSnap] = await Promise.all([db.collection('documents').get(), db.collection('notifications').get()]);
+        document.getElementById('statDocs').innerText = docsSnap.size;
+        document.getElementById('statNotifs').innerText = notifsSnap.size;
+        
+        const recentNotifs = await db.collection('notifications').orderBy('createdAt', 'desc').limit(3).get();
+        const notifContainer = document.getElementById('recentNotifs');
+        if (recentNotifs.empty) notifContainer.innerHTML = '<div style="padding:20px;text-align:center;">কোনো ঘোষণা নেই</div>';
+        else {
+            let html = '';
+            recentNotifs.forEach(doc => {
+                const d = doc.data();
+                html += `<div class="notif-item" onclick="showTab('notifs-tab')"><strong>🔔 ${d.title}</strong><br><small>${d.message.substring(0,80)}${d.message.length>80?'...':''}</small></div>`;
+            });
+            notifContainer.innerHTML = html;
+        }
+        
+        const recentDocs = await db.collection('documents').orderBy('uploadedAt', 'desc').limit(3).get();
+        const docContainer = document.getElementById('recentDocs');
+        if (recentDocs.empty) docContainer.innerHTML = '<div style="padding:20px;text-align:center;">কোনো ডকুমেন্ট নেই</div>';
+        else {
+            let html = '';
+            recentDocs.forEach(doc => {
+                const d = doc.data();
+                html += `<div class="doc-item" onclick="viewDocument('${doc.id}', '${d.title.replace(/'/g, "\\'")}', '${(d.description||'').replace(/'/g, "\\'")}', '${d.category}', '${d.fileUrl}')"><strong>📄 ${d.title}</strong><br><small>📂 ${d.category}</small></div>`;
+            });
+            docContainer.innerHTML = html;
+        }
+    }
+
+    async function loadAllDocuments() {
+        const container = document.getElementById('allDocs');
+        container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+        try {
+            const snapshot = await db.collection('documents').orderBy('uploadedAt', 'desc').get();
+            if (snapshot.empty) { container.innerHTML = '<div style="padding:40px;text-align:center;">কোনো ডকুমেন্ট নেই</div>'; return; }
+            let html = '';
+            snapshot.forEach(doc => {
+                const d = doc.data();
+                const date = d.uploadedAt ? new Date(d.uploadedAt.toDate()).toLocaleDateString('bn-BD') : '';
+                html += `<div class="doc-item" onclick="viewDocument('${doc.id}', '${d.title.replace(/'/g, "\\'")}', '${(d.description||'').replace(/'/g, "\\'")}', '${d.category}', '${d.fileUrl}')"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong>📄 ${d.title}</strong><br><small>📂 ${d.category} | 🕒 ${date}</small></div><span style="color:#16a34a;">👁️ দেখুন →</span></div></div>`;
+            });
+            container.innerHTML = html;
+        } catch(error) { container.innerHTML = '<div style="padding:40px;text-align:center;">লোড করতে ব্যর্থ</div>'; }
+    }
+
+    async function viewDocument(docId, title, desc, category, url) {
+        if (currentUser) {
+            const userDoc = await db.collection('users').doc(currentUser.uid).get();
+            const seenDocs = userDoc.data()?.seenDocuments || [];
+            if (!seenDocs.includes(docId)) {
+                seenDocs.push(docId);
+                await db.collection('users').doc(currentUser.uid).update({ seenDocuments: seenDocs });
+                loadUserProfile();
+            }
+        }
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalDesc').innerHTML = desc || 'কোনো বিবরণ নেই';
+        document.getElementById('modalCategory').innerHTML = `📂 ${category}`;
+        document.getElementById('modalLink').href = url;
+        document.getElementById('docModal').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('docModal').style.display = 'none'; }
+
+    document.getElementById('searchDoc')?.addEventListener('input', function(e) {
+        const term = e.target.value.toLowerCase();
+        const items = document.querySelectorAll('#allDocs .doc-item');
+        items.forEach(item => { item.style.display = item.innerText.toLowerCase().includes(term) ? 'block' : 'none'; });
+    });
+
+    auth.onAuthStateChanged(async (user) => {
+        if (user) { currentUser = user; document.getElementById('loginPage').style.display = 'none'; document.getElementById('dashboard').style.display = 'block'; loadUserProfile(); loadHomeData(); loadAllDocuments(); }
+    });
+</script>
+</body>
+</html>
