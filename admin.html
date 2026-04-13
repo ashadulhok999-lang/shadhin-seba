@@ -4,517 +4,117 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>স্বাধীন সেবা - অ্যাডমিন প্যানেল</title>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Hind Siliguri', sans-serif;
-            background: #f0f2f5;
-        }
-
-        /* Login Page */
-        .login-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-        }
-
-        .login-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-
-        .logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #dc2626, #16a34a);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-        }
-
-        .logo i {
-            font-size: 40px;
-            color: white;
-        }
-
-        .login-card h1 {
-            color: #dc2626;
-            margin-bottom: 5px;
-        }
-
-        .login-card .subtitle {
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        .admin-badge {
-            background: #fee2e2;
-            color: #dc2626;
-            padding: 6px 15px;
-            border-radius: 50px;
-            display: inline-block;
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .google-btn {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 14px 24px;
-            border-radius: 50px;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            width: 100%;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-
-        .google-btn:hover {
-            background: #f8f9fa;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        /* Dashboard */
-        .dashboard {
-            display: none;
-        }
-
-        .sidebar {
-            width: 260px;
-            background: #1e293b;
-            color: white;
-            position: fixed;
-            height: 100vh;
-            transition: all 0.3s;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid #334155;
-        }
-
-        .sidebar-header h3 {
-            color: #dc2626;
-        }
-
-        .sidebar-menu {
-            padding: 20px 0;
-        }
-
-        .menu-item {
-            padding: 12px 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .menu-item:hover, .menu-item.active {
-            background: #334155;
-        }
-
-        .menu-item i {
-            width: 24px;
-        }
-
-        .main-content {
-            margin-left: 260px;
-            padding: 20px;
-        }
-
-        .top-bar {
-            background: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .logout-btn {
-            background: #ef4444;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 8px;
-            color: white;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        /* Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .stat-info h4 {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .stat-info .number {
-            font-size: 28px;
-            font-weight: bold;
-            color: #1e293b;
-        }
-
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            background: #eef2ff;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .stat-icon i {
-            font-size: 24px;
-            color: #dc2626;
-        }
-
-        /* Forms */
-        .form-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #333;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            background: #dc2626;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        /* Tables */
-        .data-table {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .table-header, .table-row {
-            display: grid;
-            grid-template-columns: 2fr 1.5fr 1fr 0.5fr;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .table-header {
-            background: #f8f9fa;
-            font-weight: bold;
-        }
-
-        .role-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            display: inline-block;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Hind Siliguri', sans-serif; background: #f0f2f5; }
+        .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
+        .login-card { background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .logo { width: 80px; height: 80px; background: linear-gradient(135deg, #dc2626, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .logo i { font-size: 40px; color: white; }
+        .login-card h1 { color: #dc2626; margin-bottom: 5px; }
+        .admin-badge { background: #fee2e2; color: #dc2626; padding: 6px 15px; border-radius: 50px; display: inline-block; font-size: 14px; font-weight: bold; margin-bottom: 20px; }
+        .google-btn { background: white; border: 1px solid #ddd; padding: 14px 24px; border-radius: 50px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; transition: all 0.3s; font-weight: 500; }
+        .dashboard { display: none; }
+        .sidebar { width: 260px; background: #1e293b; color: white; position: fixed; height: 100vh; transition: all 0.3s; }
+        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid #334155; }
+        .sidebar-menu { padding: 20px 0; }
+        .menu-item { padding: 12px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.3s; }
+        .menu-item.active { background: #334155; }
+        .main-content { margin-left: 260px; padding: 20px; }
+        .top-bar { background: white; padding: 15px 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+        .stat-card { background: white; padding: 20px; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .form-card { background: white; padding: 25px; border-radius: 15px; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
+        .btn-primary { background: #dc2626; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; }
+        .data-table { background: white; border-radius: 15px; overflow: hidden; }
+        .table-header, .table-row { display: grid; grid-template-columns: 2fr 1.5fr 1fr 0.5fr; padding: 15px; border-bottom: 1px solid #eee; }
+        .table-header { background: #f8f9fa; font-weight: bold; }
+        .role-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; }
         .role-admin { background: #fee2e2; color: #dc2626; }
         .role-user { background: #dcfce7; color: #16a34a; }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #dc2626;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 70px;
-            }
-            .sidebar-header h3, .menu-item span {
-                display: none;
-            }
-            .main-content {
-                margin-left: 70px;
-            }
-            .menu-item {
-                justify-content: center;
-            }
-        }
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
+        .page { display: none; }
+        .page.active { display: block; }
+        .loading { text-align: center; padding: 40px; }
+        .spinner { width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid #dc2626; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar-header h3, .menu-item span { display: none; } .main-content { margin-left: 70px; } }
     </style>
 </head>
 <body>
 
-<!-- Login Page -->
 <div id="loginPage" class="login-container">
     <div class="login-card">
-        <div class="logo">
-            <i class="fas fa-shield-alt"></i>
-        </div>
-        <div class="admin-badge">
-            <i class="fas fa-crown"></i> অ্যাডমিন প্যানেল
-        </div>
+        <div class="logo"><i class="fas fa-shield-alt"></i></div>
+        <div class="admin-badge"><i class="fas fa-crown"></i> অ্যাডমিন প্যানেল</div>
         <h1>স্বাধীন সেবা</h1>
-        <p class="subtitle">স্বাধীন বাংলা স্পোর্টিং ক্লাব</p>
-        <button class="google-btn" onclick="signInWithGoogle()">
-            <i class="fab fa-google"></i> Google দিয়ে লগইন করুন
-        </button>
-        <p style="margin-top: 20px; font-size: 12px; color: #999;">
-            <i class="fas fa-lock"></i> শুধুমাত্র অ্যাডমিনদের জন্য
-        </p>
+        <button class="google-btn" onclick="signInWithGoogle()"><i class="fab fa-google"></i> Google দিয়ে লগইন</button>
     </div>
 </div>
 
-<!-- Admin Dashboard -->
 <div id="dashboard" class="dashboard">
     <div class="sidebar">
-        <div class="sidebar-header">
-            <i class="fas fa-futbol" style="font-size: 30px; color: #dc2626;"></i>
-            <h3>স্বাধীন সেবা</h3>
-        </div>
+        <div class="sidebar-header"><h3>স্বাধীন সেবা</h3></div>
         <div class="sidebar-menu">
-            <div class="menu-item active" data-page="dashboard-page">
-                <i class="fas fa-chart-line"></i> <span>ড্যাশবোর্ড</span>
-            </div>
-            <div class="menu-item" data-page="upload-page">
-                <i class="fas fa-upload"></i> <span>ডকুমেন্ট আপলোড</span>
-            </div>
-            <div class="menu-item" data-page="users-page">
-                <i class="fas fa-users"></i> <span>স্বেচ্ছাসেবক</span>
-            </div>
-            <div class="menu-item" data-page="notify-page">
-                <i class="fas fa-bell"></i> <span>ঘোষণা প্রেরণ</span>
-            </div>
+            <div class="menu-item active" data-page="dashboard-page"><i class="fas fa-chart-line"></i> <span>ড্যাশবোর্ড</span></div>
+            <div class="menu-item" data-page="upload-page"><i class="fas fa-upload"></i> <span>আপলোড</span></div>
+            <div class="menu-item" data-page="users-page"><i class="fas fa-users"></i> <span>সদস্যরা</span></div>
+            <div class="menu-item" data-page="notify-page"><i class="fas fa-bell"></i> <span>ঘোষণা</span></div>
         </div>
     </div>
-
     <div class="main-content">
-        <div class="top-bar">
-            <h2 id="pageTitle">ড্যাশবোর্ড</h2>
-            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> লগআউট</button>
-        </div>
-
-        <!-- Dashboard Page -->
+        <div class="top-bar"><h2 id="pageTitle">ড্যাশবোর্ড</h2><button class="btn-primary" onclick="logout()">লগআউট</button></div>
+        
         <div id="dashboard-page" class="page active">
-            <div class="stats-grid" id="statsGrid">
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <h4>মোট ডকুমেন্ট</h4>
-                        <div class="number" id="totalDocs">0</div>
-                    </div>
-                    <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <h4>মোট স্বেচ্ছাসেবক</h4>
-                        <div class="number" id="totalUsers">0</div>
-                    </div>
-                    <div class="stat-icon"><i class="fas fa-users"></i></div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <h4>মোট ঘোষণা</h4>
-                        <div class="number" id="totalNotifs">0</div>
-                    </div>
-                    <div class="stat-icon"><i class="fas fa-bell"></i></div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <h4>অ্যাক্টিভ আজ</h4>
-                        <div class="number">24</div>
-                    </div>
-                    <div class="stat-icon"><i class="fas fa-user-check"></i></div>
-                </div>
-            </div>
-
-            <div class="form-card">
-                <h3><i class="fas fa-bolt"></i> দ্রুত অ্যাকশন</h3>
-                <div style="display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
-                    <button class="btn-primary" onclick="showPage('upload-page')"><i class="fas fa-upload"></i> ডকুমেন্ট আপলোড</button>
-                    <button class="btn-primary" onclick="showPage('users-page')" style="background:#16a34a;"><i class="fas fa-users"></i> স্বেচ্ছাসেবক লিস্ট</button>
-                    <button class="btn-primary" onclick="showPage('notify-page')" style="background:#f59e0b;"><i class="fas fa-bell"></i> ঘোষণা পাঠান</button>
-                </div>
+            <div class="stats-grid">
+                <div class="stat-card"><div><h4>ডকুমেন্ট</h4><div class="number" id="totalDocs">0</div></div><i class="fas fa-file-alt"></i></div>
+                <div class="stat-card"><div><h4>সদস্য</h4><div class="number" id="totalUsers">0</div></div><i class="fas fa-users"></i></div>
             </div>
         </div>
 
-        <!-- Upload Page -->
         <div id="upload-page" class="page">
             <div class="form-card">
-                <h3><i class="fas fa-cloud-upload-alt"></i> নতুন ডকুমেন্ট আপলোড</h3>
-                <div class="form-group">
-                    <label>ডকুমেন্টের শিরোনাম *</label>
-                    <input type="text" id="docTitle" placeholder="যেমন: সংবিধান ২০২৪">
-                </div>
-                <div class="form-group">
-                    <label>বিবরণ</label>
-                    <textarea id="docDesc" rows="3" placeholder="ডকুমেন্ট সম্পর্কে সংক্ষেপে..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>ক্যাটাগরি *</label>
-                    <select id="docCategory">
-                        <option value="">সিলেক্ট করুন</option>
-                        <option>সংবিধান</option>
-                        <option>বার্ষিক পরিকল্পনা</option>
-                        <option>মিটিং মিনিটস</option>
-                        <option>স্বেচ্ছাসেবক নির্দেশিকা</option>
-                        <option>প্রশিক্ষণ ম্যানুয়াল</option>
-                        <option>অন্যান্য</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>ফাইল নির্বাচন *</label>
-                    <input type="file" id="docFile" accept=".pdf,.doc,.docx,.jpg,.png,.xlsx">
-                </div>
-                <button class="btn-primary" onclick="uploadDocument()" id="uploadBtn"><i class="fas fa-upload"></i> আপলোড করুন</button>
+                <input type="text" id="docTitle" placeholder="শিরোনাম" class="form-group">
+                <select id="docCategory" class="form-group"><option value="অন্যান্য">অন্যান্য</option><option value="সংবিধান">সংবিধান</option></select>
+                <input type="file" id="docFile" class="form-group">
+                <button class="btn-primary" onclick="uploadDocument()" id="uploadBtn">আপলোড করুন</button>
             </div>
-
-            <h3 style="margin: 20px 0 15px;"><i class="fas fa-list"></i> আপলোডকৃত ডকুমেন্টসমূহ</h3>
-            <div id="documentsList" class="data-table">
-                <div class="loading"><div class="spinner"></div></div>
-            </div>
+            <div id="documentsList" class="data-table"></div>
         </div>
 
-        <!-- Users Page -->
-        <div id="users-page" class="page">
-            <div class="form-group">
-                <input type="text" id="searchUser" placeholder="🔍 স্বেচ্ছাসেবক খুঁজুন..." style="max-width: 300px;">
-            </div>
-            <div id="usersList" class="data-table">
-                <div class="loading"><div class="spinner"></div></div>
-            </div>
-        </div>
-
-        <!-- Notify Page -->
+        <div id="users-page" class="page"><div id="usersList" class="data-table"></div></div>
+        
         <div id="notify-page" class="page">
             <div class="form-card">
-                <h3><i class="fas fa-paper-plane"></i> নতুন ঘোষণা প্রেরণ</h3>
-                <div class="form-group">
-                    <label>ঘোষণার শিরোনাম *</label>
-                    <input type="text" id="notifTitle" placeholder="যেমন: আগামীকালের মিটিং">
-                </div>
-                <div class="form-group">
-                    <label>বার্তা *</label>
-                    <textarea id="notifMessage" rows="4" placeholder="বিস্তারিত বার্তা লিখুন..."></textarea>
-                </div>
-                <button class="btn-primary" onclick="sendNotification()" id="sendBtn"><i class="fas fa-paper-plane"></i> ঘোষণা প্রেরণ করুন</button>
-            </div>
-
-            <h3 style="margin: 20px 0 15px;"><i class="fas fa-history"></i> পূর্ববর্তী ঘোষণাসমূহ</h3>
-            <div id="notificationsList" class="data-table">
-                <div class="loading"><div class="spinner"></div></div>
+                <input type="text" id="notifTitle" placeholder="শিরোনাম" class="form-group">
+                <textarea id="notifMessage" placeholder="বার্তা লিখুন" class="form-group"></textarea>
+                <button class="btn-primary" onclick="sendNotification()">ঘোষণা পাঠান</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // ========== FIREBASE CONFIGURATION - আপনার তথ্য এখানে দিন ==========
+    // ১. ফায়ারবেস কনফিগারেশন
     const firebaseConfig = {
-  apiKey: "AIzaSyBZaXREa0EJ96dFVvBdb6NFrdYQolBz1P4",
-  authDomain: "rococo-jalebi-5dcb6f.netlify.app", 
-  databaseURL: "https://shadhin-seba-default-rtdb.firebaseio.com",
-  projectId: "shadhin-seba",
-  storageBucket: "shadhin-seba.firebasestorage.app",
-  messagingSenderId: "69477997964",
-  appId: "1:69477997964:web:aa779b871e73b228eecaa9",
-  measurementId: "G-VFNJ7N4D88"
-};
-    
-    // Initialize Firebase
+        apiKey: "AIzaSyBZaXREa0EJ96dFVvBdb6NFrdYQolBz1P4",
+        authDomain: "rococo-jalebi-5dcb6f.netlify.app", 
+        databaseURL: "https://shadhin-seba-default-rtdb.firebaseio.com",
+        projectId: "shadhin-seba",
+        storageBucket: "shadhin-seba.firebasestorage.app",
+        messagingSenderId: "69477997964",
+        appId: "1:69477997964:web:aa779b871e73b228eecaa9",
+        measurementId: "G-VFNJ7N4D88"
+    };
+
+    // ২. ফায়ারবেস ইনিশিয়ালাইজ (সবার আগে)
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
@@ -522,322 +122,105 @@
 
     let currentUser = null;
 
-    // Google Sign In
+    // লগইন ফাংশন
     async function signInWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
         try {
             const result = await auth.signInWithPopup(provider);
             const user = result.user;
-            
             const userDoc = await db.collection('users').doc(user.uid).get();
-            let role = 'user';
-            if (userDoc.exists) {
-                role = userDoc.data().role;
-            } else {
-                await db.collection('users').doc(user.uid).set({
-                    name: user.displayName,
-                    email: user.email,
-                    role: 'user',
-                    createdAt: new Date(),
-                    lastLogin: new Date(),
-                    seenDocuments: []
-                });
-            }
             
-            if (role === 'admin') {
-                currentUser = user;
-                document.getElementById('loginPage').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                loadDashboardData();
-                loadDocuments();
-                loadUsers();
-                loadNotifications();
+            if (userDoc.exists && userDoc.data().role === 'admin') {
+                loginSuccess(user);
             } else {
-                alert('আপনার অ্যাডমিন এক্সেস নেই! প্রশাসকের সাথে যোগাযোগ করুন।');
+                alert('অ্যাডমিন এক্সেস নেই!');
                 await auth.signOut();
             }
         } catch (error) {
-            alert('লগইন ব্যর্থ: ' + error.message);
+            alert('ত্রুটি: ' + error.message);
         }
     }
 
-    // Logout
-    async function logout() {
-        await auth.signOut();
-        currentUser = null;
-        document.getElementById('loginPage').style.display = 'flex';
-        document.getElementById('dashboard').style.display = 'none';
+    function loginSuccess(user) {
+        currentUser = user;
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        loadDashboardData();
+        loadDocuments();
+        loadUsers();
     }
 
-    // Show Page
+    async function logout() {
+        await auth.signOut();
+        location.reload();
+    }
+
     function showPage(pageId) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
-        
-        document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-        document.querySelector(`.menu-item[data-page="${pageId}"]`).classList.add('active');
-        
-        const titles = {
-            'dashboard-page': 'ড্যাশবোর্ড',
-            'upload-page': 'ডকুমেন্ট আপলোড',
-            'users-page': 'স্বেচ্ছাসেবক ব্যবস্থাপনা',
-            'notify-page': 'ঘোষণা প্রেরণ'
-        };
-        document.getElementById('pageTitle').innerText = titles[pageId];
-        
-        if (pageId === 'dashboard-page') loadDashboardData();
-        if (pageId === 'upload-page') loadDocuments();
-        if (pageId === 'users-page') loadUsers();
-        if (pageId === 'notify-page') loadNotifications();
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
     }
 
-    // Load Dashboard Data
-    async function loadDashboardData() {
-        try {
-            const [docsSnap, usersSnap, notifsSnap] = await Promise.all([
-                db.collection('documents').get(),
-                db.collection('users').get(),
-                db.collection('notifications').get()
-            ]);
-            document.getElementById('totalDocs').innerText = docsSnap.size;
-            document.getElementById('totalUsers').innerText = usersSnap.size;
-            document.getElementById('totalNotifs').innerText = notifsSnap.size;
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    // Upload Document
-    async function uploadDocument() {
-        const title = document.getElementById('docTitle').value;
-        const desc = document.getElementById('docDesc').value;
-        const category = document.getElementById('docCategory').value;
-        const file = document.getElementById('docFile').files[0];
-        
-        if (!title || !category || !file) {
-            alert('শিরোনাম, ক্যাটাগরি এবং ফাইল নির্বাচন করুন!');
-            return;
-        }
-        
-        const btn = document.getElementById('uploadBtn');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> আপলোড হচ্ছে...';
-        
-        try {
-            const fileName = Date.now() + '_' + file.name;
-            const storageRef = storage.ref().child(`documents/${category}/${fileName}`);
-            await storageRef.put(file);
-            const fileUrl = await storageRef.getDownloadURL();
-            
-            await db.collection('documents').add({
-                title, description: desc, category, fileUrl, fileName,
-                uploadedAt: new Date(), uploadedBy: currentUser.email
-            });
-            
-            alert('✅ ডকুমেন্ট সফলভাবে আপলোড হয়েছে!');
-            document.getElementById('docTitle').value = '';
-            document.getElementById('docDesc').value = '';
-            document.getElementById('docCategory').value = '';
-            document.getElementById('docFile').value = '';
-            loadDocuments();
-            loadDashboardData();
-        } catch (error) {
-            alert('আপলোড ব্যর্থ: ' + error.message);
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-upload"></i> আপলোড করুন';
-        }
-    }
-
-    // Load Documents
-    async function loadDocuments() {
-        const container = document.getElementById('documentsList');
-        container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-        
-        try {
-            const snapshot = await db.collection('documents').orderBy('uploadedAt', 'desc').get();
-            if (snapshot.empty) {
-                container.innerHTML = '<div style="padding:40px;text-align:center;">কোনো ডকুমেন্ট নেই</div>';
-                return;
-            }
-            
-            let html = `<div class="table-header">
-                <div>শিরোনাম</div><div>ক্যাটাগরি</div><div>তারিখ</div><div>অ্যাকশন</div>
-            </div>`;
-            
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const date = data.uploadedAt ? new Date(data.uploadedAt.toDate()).toLocaleDateString('bn-BD') : '';
-                html += `<div class="table-row">
-                    <div><strong>📄 ${data.title}</strong></div>
-                    <div>${data.category}</div>
-                    <div>${date}</div>
-                    <div>
-                        <a href="${data.fileUrl}" target="_blank" style="color:#dc2626; margin-right:10px;"><i class="fas fa-eye"></i></a>
-                        <a href="#" onclick="deleteDocument('${doc.id}')" style="color:#ef4444;"><i class="fas fa-trash"></i></a>
-                    </div>
-                </div>`;
-            });
-            container.innerHTML = html;
-        } catch (error) {
-            container.innerHTML = '<div style="padding:40px;text-align:center;">লোড করতে ব্যর্থ</div>';
-        }
-    }
-
-    // Delete Document
-    async function deleteDocument(docId) {
-        if (confirm('ডকুমেন্ট ডিলিট করতে চান?')) {
-            await db.collection('documents').doc(docId).delete();
-            loadDocuments();
-            loadDashboardData();
-        }
-    }
-
-    // Load Users
-    async function loadUsers() {
-        const container = document.getElementById('usersList');
-        container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-        
-        try {
-            const snapshot = await db.collection('users').get();
-            if (snapshot.empty) {
-                container.innerHTML = '<div style="padding:40px;text-align:center;">কোনো স্বেচ্ছাসেবক নেই</div>';
-                return;
-            }
-            
-            let html = `<div class="table-header">
-                <div>নাম</div><div>ইমেইল</div><div>রোল</div><div>অ্যাকশন</div>
-            </div>`;
-            
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const roleClass = data.role === 'admin' ? 'role-admin' : 'role-user';
-                const roleText = data.role === 'admin' ? 'অ্যাডমিন' : 'স্বেচ্ছাসেবক';
-                html += `<div class="table-row">
-                    <div>${data.name || 'নাম নেই'}</div>
-                    <div>${data.email}</div>
-                    <div><span class="role-badge ${roleClass}">${roleText}</span></div>
-                    <div>
-                        ${data.role !== 'admin' ? `<button onclick="makeAdmin('${doc.id}')" style="background:#16a34a; color:white; border:none; padding:5px 10px; border-radius:5px;"><i class="fas fa-crown"></i> অ্যাডমিন করুন</button>` : '-'}
-                    </div>
-                </div>`;
-            });
-            container.innerHTML = html;
-        } catch (error) {
-            container.innerHTML = '<div style="padding:40px;text-align:center;">লোড করতে ব্যর্থ</div>';
-        }
-    }
-
-    // Make Admin
-    async function makeAdmin(userId) {
-        if (confirm('এই স্বেচ্ছাসেবককে অ্যাডমিন করতে চান?')) {
-            await db.collection('users').doc(userId).update({ role: 'admin' });
-            loadUsers();
-            alert('অ্যাডমিন করা হয়েছে');
-        }
-    }
-
-    // Send Notification
-    async function sendNotification() {
-        const title = document.getElementById('notifTitle').value;
-        const message = document.getElementById('notifMessage').value;
-        
-        if (!title || !message) {
-            alert('শিরোনাম এবং বার্তা দিন!');
-            return;
-        }
-        
-        const btn = document.getElementById('sendBtn');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> প্রেরণ হচ্ছে...';
-        
-        try {
-            await db.collection('notifications').add({
-                title, message, createdAt: new Date(), isRead: false
-            });
-            alert('✅ ঘোষণা প্রেরণ করা হয়েছে!');
-            document.getElementById('notifTitle').value = '';
-            document.getElementById('notifMessage').value = '';
-            loadNotifications();
-        } catch (error) {
-            alert('প্রেরণ ব্যর্থ: ' + error.message);
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> ঘোষণা প্রেরণ করুন';
-        }
-    }
-
-    // Load Notifications
-    async function loadNotifications() {
-        const container = document.getElementById('notificationsList');
-        container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-        
-        try {
-            const snapshot = await db.collection('notifications').orderBy('createdAt', 'desc').get();
-            if (snapshot.empty) {
-                container.innerHTML = '<div style="padding:40px;text-align:center;">কোনো ঘোষণা নেই</div>';
-                return;
-            }
-            
-            let html = `<div class="table-header">
-                <div>শিরোনাম</div><div>বার্তা</div><div>তারিখ</div><div>অ্যাকশন</div>
-            </div>`;
-            
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const date = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleString('bn-BD') : '';
-                html += `<div class="table-row">
-                    <div><strong>🔔 ${data.title}</strong></div>
-                    <div>${data.message.substring(0, 50)}${data.message.length > 50 ? '...' : ''}</div>
-                    <div>${date}</div>
-                    <div><a href="#" onclick="deleteNotification('${doc.id}')" style="color:#ef4444;"><i class="fas fa-trash"></i></a></div>
-                </div>`;
-            });
-            container.innerHTML = html;
-        } catch (error) {
-            container.innerHTML = '<div style="padding:40px;text-align:center;">লোড করতে ব্যর্থ</div>';
-        }
-    }
-
-    // Delete Notification
-    async function deleteNotification(notifId) {
-        if (confirm('ঘোষণা ডিলিট করতে চান?')) {
-            await db.collection('notifications').doc(notifId).delete();
-            loadNotifications();
-            loadDashboardData();
-        }
-    }
-
-    // Search User
-    document.getElementById('searchUser')?.addEventListener('input', function(e) {
-        const term = e.target.value.toLowerCase();
-        const rows = document.querySelectorAll('#usersList .table-row');
-        rows.forEach(row => {
-            const text = row.innerText.toLowerCase();
-            row.style.display = text.includes(term) ? 'grid' : 'none';
-        });
-    });
-
-    // Menu click handlers
     document.querySelectorAll('.menu-item').forEach(item => {
         item.addEventListener('click', () => showPage(item.dataset.page));
     });
 
-    // Auth state
+    async function loadDashboardData() {
+        const docs = await db.collection('documents').get();
+        const users = await db.collection('users').get();
+        document.getElementById('totalDocs').innerText = docs.size;
+        document.getElementById('totalUsers').innerText = users.size;
+    }
+
+    async function uploadDocument() {
+        const file = document.getElementById('docFile').files[0];
+        const title = document.getElementById('docTitle').value;
+        const category = document.getElementById('docCategory').value;
+        if(!file || !title) return alert('সব তথ্য দিন');
+
+        const btn = document.getElementById('uploadBtn');
+        btn.disabled = true;
+        
+        try {
+            const ref = storage.ref().child(`docs/${Date.now()}_${file.name}`);
+            await ref.put(file);
+            const url = await ref.getDownloadURL();
+            await db.collection('documents').add({
+                title, url, category, uploadedAt: new Date()
+            });
+            alert('সফল হয়েছে');
+            loadDocuments();
+        } catch(e) { alert(e.message); }
+        btn.disabled = false;
+    }
+
+    async function loadDocuments() {
+        const snap = await db.collection('documents').get();
+        let html = '';
+        snap.forEach(doc => {
+            const d = doc.data();
+            html += `<div class="table-row"><div>${d.title}</div><div>${d.category}</div><div>-</div><div><a href="${d.url}" target="_blank">View</a></div></div>`;
+        });
+        document.getElementById('documentsList').innerHTML = html;
+    }
+
+    async function loadUsers() {
+        const snap = await db.collection('users').get();
+        let html = '';
+        snap.forEach(doc => {
+            const u = doc.data();
+            html += `<div class="table-row"><div>${u.name}</div><div>${u.email}</div><div>${u.role}</div></div>`;
+        });
+        document.getElementById('usersList').innerHTML = html;
+    }
+
     auth.onAuthStateChanged(async (user) => {
         if (user) {
             const userDoc = await db.collection('users').doc(user.uid).get();
-            if (userDoc.exists && userDoc.data().role === 'admin') {
-                currentUser = user;
-                document.getElementById('loginPage').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                loadDashboardData();
-                loadDocuments();
-                loadUsers();
-                loadNotifications();
-            }
+            if (userDoc.exists && userDoc.data().role === 'admin') loginSuccess(user);
         }
     });
 </script>
 </body>
-</html>
+                    </html>
